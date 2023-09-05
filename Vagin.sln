@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vagin", "Vagin\Vagin.csproj", "{CE17FB5A-C2A2-4EED-A7C6-1EE7D57EEE51}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE17FB5A-C2A2-4EED-A7C6-1EE7D57EEE51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE17FB5A-C2A2-4EED-A7C6-1EE7D57EEE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE17FB5A-C2A2-4EED-A7C6-1EE7D57EEE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE17FB5A-C2A2-4EED-A7C6-1EE7D57EEE51}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8FE6C9E2-F8B6-4705-BF31-A3193C5D4A91}
+	EndGlobalSection
+EndGlobal
