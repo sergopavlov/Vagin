@@ -13,7 +13,7 @@ namespace Vagin.Problems
 
         protected bool IsPointInsideElement(IElement element, double r, double z)
         {
-
+         return false;
         }
     }
 }
