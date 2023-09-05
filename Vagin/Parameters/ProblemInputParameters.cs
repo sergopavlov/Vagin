@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Vagin.Parameters
 {
-    internal class ProblemInputParameters
+    internal abstract class ProblemInputParameters
     {
-        public List<double> Parameters;
     }
 }
