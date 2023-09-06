@@ -14,4 +14,4 @@ tmp.ZMax = 0;
 tmp.ZMin = -10;
 tmp.ZsplitCount = 3;
 tmp.ZCoeff = 2;
-MeshBuilder.BuildMesh(tmp);
+var check = MeshBuilder.BuildMesh(tmp);

@@ -55,7 +55,7 @@ namespace Vagin
          mesh.SetElements(Elements);
          mesh.SetDirichleCondition(DirichleVertices);
 
-         throw new NotImplementedException();
+         return mesh;
       }
    }
 }
