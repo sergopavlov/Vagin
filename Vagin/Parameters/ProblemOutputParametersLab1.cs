@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Vagin.Parameters
 {
-    internal abstract class ProblemOutputParameters
+    internal class ProblemOutputParametersLab1:ProblemOutputParameters
     {
     }
 }
