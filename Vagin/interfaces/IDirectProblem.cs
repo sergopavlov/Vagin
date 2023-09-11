@@ -7,8 +7,8 @@ using Vagin.Parameters;
 
 namespace Vagin.interfaces
 {
-    internal interface IDirectProblem
+    internal interface IDirectProblem<Tinput, Toutput> where Tinput : ProblemInputParameters where Toutput : ProblemOutputParameters
     {
-        public ProblemOutputParameters Calculate(ProblemInputParameters parameters);
+        public Toutput Calculate(Tinput parameters);
     }
 }

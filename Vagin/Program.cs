@@ -1,4 +1,3 @@
-﻿
 using Vagin;
 using Vagin.Parameters;
 
@@ -15,3 +14,4 @@ tmp.ZMin = -10;
 tmp.ZsplitCount = 3;
 tmp.ZCoeff = 2;
 var check = MeshBuilder.BuildMesh(tmp);
+
