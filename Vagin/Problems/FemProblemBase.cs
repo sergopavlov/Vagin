@@ -214,6 +214,7 @@ namespace Vagin.Problems
                 new double[]{1,-1},
                 new double[]{ -1,1}
             };
+
         }
     }}
 
