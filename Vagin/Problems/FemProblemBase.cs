@@ -14,6 +14,11 @@ namespace Vagin.Problems
         SLAE slae;
         double[] q;
 
+        protected FemProblemBase(IMesh mesh)
+        {
+            this.mesh = mesh;
+        }
+
         protected void SolveFem(Tinput parameters)
         {
             GeneratePortrait();
@@ -36,7 +41,11 @@ namespace Vagin.Problems
         {
             if (!IsPointInsideElement(element, r, z))
                 throw new Exception("Point outside element");
-            
+            var bounds = GetElemBoundaries(element);
+            var ksi = (r - bounds.rmin) / (bounds.rmax - bounds.rmin);
+            var eta = (bounds.zmax - z) / (bounds.zmax - bounds.zmin);
+            return (ksi, eta);
+
         }
 
         protected (double rmin, double rmax, double zmin, double zmax) GetElemBoundaries(IElement element)
@@ -72,27 +81,21 @@ namespace Vagin.Problems
                 rs[i] = mesh.R[element.LocalToGlobal[i]];
             }
             double[] localvec = GetLocalRightPart(element);
+
             for (int i = 0; i < 4; i++)
             {
-                for (int k = 0; k < 4; k++)
-                {
-                    slae.di[element.LocalToGlobal[i]] += cursigma * rs[k] * (hz / hr * Matrices.GR[i % 2][i % 2][k] * Matrices.MZ[i / 2][i / 2][k] + hr / hz * Matrices.MR[i % 2][i % 2][k] * Matrices.GZ[i / 2][i / 2][k]);
-                }
-                slae.b[element.LocalToGlobal[i]] += localvec[i];
+                for (int k = 0; k < 2; k++)
+                    slae.di[element.LocalToGlobal[i]] += cursigma * rs[k] * (hz / hr * Matrices.GR[k][i % 2][i % 2] * Matrices.MZ[i / 2][i / 2] + hr / hz * Matrices.MR[k][i % 2][i % 2] * Matrices.GZ[i / 2][i / 2]);
                 for (int j = 0; j < i; j++)
                 {
-                    double cur = 0;
-                    for (int k = 0; k < 4; k++)
-                    {
-                        cur += cursigma * rs[k] * (hz / hr * Matrices.GR[i % 2][j % 2][k] * Matrices.MZ[i / 2][j / 2][k] + hr / hz * Matrices.MR[i % 2][j % 2][k] * Matrices.GZ[i / 2][j / 2][k]);
-                    }
-
                     int max = element.LocalToGlobal[i] > element.LocalToGlobal[j] ? element.LocalToGlobal[i] : element.LocalToGlobal[j];
                     int min = element.LocalToGlobal[i] > element.LocalToGlobal[j] ? element.LocalToGlobal[j] : element.LocalToGlobal[i];
                     int index = Array.BinarySearch(slae.ja, slae.ia[max], slae.ia[max + 1] - slae.ia[max], min);
-                    slae.al[index] += cur;
+                    for (int k = 0; k < 2; k++)
+                        slae.al[index] += cursigma * rs[k] * (hz / hr * Matrices.GR[k][i % 2][j % 2] * Matrices.MZ[i / 2][j / 2] + hr / hz * Matrices.MR[k][i % 2][j % 2] * Matrices.GZ[i / 2][j / 2]);
                 }
             }
+
 
         }
         private void GeneratePortrait()
@@ -153,8 +156,28 @@ namespace Vagin.Problems
         }
         public abstract Toutput Calculate(Tinput parameters);
 
-        private static class Matrices//посчитать
+
+        private static class Matrices
         {
+            public static double[][][] GMatr = new double[2][][]
+            {
+                new double[4][]
+                {
+                    new double[4]{5.0/12,-1.0/12,-1.0/6,-1.0/6},//x y  x
+                    new double[4]{-1.0/12,1.0/4,-1.0/6,0 },//1-x y x
+                    new double[4]{-1.0/6,-1.0/6,5.0/12,-1.0/12},//1-y x x
+                    new double[4]{ -1.0 / 6,0,-1.0/12,1.0/4 }//1-y 1-x x
+                },
+                new double[4][]
+                {
+                    new double[4]{1.0/4,-1.0/12,0,-1.0/6},//x y 1-x
+                    new double[4]{-1.0/12,5.0/12,-1.0/6,-1.0/6},//1-x y 1-x
+                    new double[4]{0,-1.0/6,1.0/4,-1.0/12},
+                    new double[4]{-1.0/6,-1.0/6,-1.0/12,5.0/12}
+                }
+            };
+
+
             public static double[][][] GR = new double[][][]
             {
                 new double[][]
@@ -181,32 +204,17 @@ namespace Vagin.Problems
                     new double[]{ 1.0 / 12, 0.25}
                 }
             };
-            public static double[][][] MZ = new double[][][]
+            public static double[][] MZ = new double[][]
             {
-            new double[][]
-                {
-                    new double[]{1.0/3,1.0/6},
-                    new double[]{ 1.0/6, 1.0 / 3 }
-                },
-                new double[][]
-                {
-                    new double[]{1.0/3,1.0/6},
-                    new double[]{ 1.0/6, 1.0 / 3 }
-                }
+                new double[]{1.0/3,1.0/6},
+                new double[]{ 1.0/6, 1.0 / 3 }
             };
-            public static double[][][] GZ = new double[][][]
+            public static double[][] GZ = new double[][]
             {
-            new double[][]
-                {
-                    new double[]{1.0/3,1.0/6},
-                    new double[]{ 1.0/6, 1.0 / 3 }
-                },
-                new double[][]
-                {
-                    new double[]{1.0/3,1.0/6},
-                    new double[]{ 1.0/6, 1.0 / 3 }
-                }
+                new double[]{1,-1},
+                new double[]{ -1,1}
             };
         }
-    }
-}
+    }}
+
+
