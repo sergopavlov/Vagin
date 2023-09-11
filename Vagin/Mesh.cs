@@ -21,13 +21,24 @@ namespace Vagin
       private double[] z;
       private Element[] elements;
       private List<int> dirichleConditions;
-      public void SetR(List<double> R)
+      public void SetR(List<double> R, int Zcount)
       {
-         r = R.ToArray();
+         var tmp = new List<double>();
+         for (int i = 0; i<Zcount; i++)
+         {
+            tmp.AddRange(R);
+         }
+         r = tmp.ToArray();
       }
-      public void SetZ(List<double> Z)
+      public void SetZ(List<double> Z, int Rcount)
       {
-         z = Z.ToArray();
+         var tmp = new List<double>();
+         for(int i = 0; i< Z.Count; i++)
+         for (int j = 0; j < Rcount; j++)
+         {
+            tmp.Add(Z[i]);
+         }
+         z = tmp.ToArray();
       }
       public void SetElements(List<Element> Elements)
       {

@@ -24,7 +24,7 @@ namespace Vagin
             R.Add(R[i - 1] + (R[i - 1]-R[i-2]) * parameters.RCoeff);
          }
          R.Add(parameters.RMax);
-         mesh.SetR(R);
+         
 
          var Z = new List<double>();
          var firstZ = Math.Abs(parameters.ZCoeff - 1) < 1e-12 ? (parameters.ZMax - parameters.ZMin) / parameters.ZsplitCount : (parameters.ZMax - parameters.ZMin) * (1 - parameters.ZCoeff) / (1 - Math.Pow(parameters.ZCoeff, (double)parameters.ZsplitCount));
@@ -35,7 +35,8 @@ namespace Vagin
             Z.Add(Z[i - 1] + (Z[i - 1] - Z[i - 2]) * parameters.ZCoeff);
          }
          Z.Add(parameters.ZMin);
-         mesh.SetZ(Z);
+         mesh.SetR(R, Z.Count);
+         mesh.SetZ(Z, R.Count);
 
          var Elements = new List<Element>();
          var DirichleVertices = new HashSet<int>();
