@@ -84,6 +84,7 @@ namespace Vagin.Problems
 
             for (int i = 0; i < 4; i++)
             {
+                slae.b[i] += localvec[i];
                 for (int k = 0; k < 2; k++)
                     slae.di[element.LocalToGlobal[i]] += cursigma * rs[k] * (hz / hr * Matrices.GR[k][i % 2][i % 2] * Matrices.MZ[i / 2][i / 2] + hr / hz * Matrices.MR[k][i % 2][i % 2] * Matrices.GZ[i / 2][i / 2]);
                 for (int j = 0; j < i; j++)
@@ -155,7 +156,10 @@ namespace Vagin.Problems
             }
         }
         public abstract Toutput Calculate(Tinput parameters);
-
+        protected double GetSolutionAtpoint(double r,double z)
+        {
+            throw new NotImplementedException();
+        }
 
         private static class Matrices
         {
