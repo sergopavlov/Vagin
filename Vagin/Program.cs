@@ -1,5 +1,6 @@
 using Vagin;
 using Vagin.Parameters;
+using Vagin.Problems;
 
 Console.WriteLine("Hello, World!");
 
@@ -13,5 +14,8 @@ tmp.ZMax = 0;
 tmp.ZMin = -10000;
 tmp.ZsplitCount = 50;
 tmp.ZCoeff = 2;
-var check = MeshBuilder.BuildMesh(tmp);
+//var check = MeshBuilder.BuildMesh(tmp);
+InverseProblem check = new();
+DummyOutput output = (DummyOutput)check.Calculate(new DummyInput(0.1), new DummyOutput(0));
+Console.WriteLine(output.Value);
 
