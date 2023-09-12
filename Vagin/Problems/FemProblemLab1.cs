@@ -16,7 +16,8 @@ namespace Vagin.Problems
 
         public override ProblemOutputParametersLab1 Calculate(ProblemInputParametersLab1 parameters)
         {
-            throw new NotImplementedException();
+            SolveFem(parameters);
+            return null;
         }
 
         protected override double CalcAverageSigma(IElement element, ProblemInputParametersLab1 parameters)
