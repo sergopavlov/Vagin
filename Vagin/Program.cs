@@ -11,6 +11,7 @@ tmp.RCoeff = 1.04;
 
 tmp.ZMax = 0;
 tmp.ZMin = -10000;
+
 tmp.ZsplitCount = 200;
 tmp.ZCoeff = 1.04;
 var check = MeshBuilder.BuildMesh(tmp);
