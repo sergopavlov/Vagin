@@ -9,6 +9,6 @@ namespace Vagin.interfaces
 {
     internal interface IDirectProblem<Tinput, Toutput> where Tinput : ProblemInputParameters where Toutput : ProblemOutputParameters
     {
-        public Toutput Calculate(Tinput parameters);
+        public void Calculate(Tinput parametersm, Toutput output);
     }
 }

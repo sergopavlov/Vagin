@@ -14,10 +14,14 @@ namespace Vagin.Problems
         {
         }
 
-        public override ProblemOutputParametersLab1 Calculate(ProblemInputParametersLab1 parameters)
+        public override void Calculate(ProblemInputParametersLab1 parameters, ProblemOutputParametersLab1 output)
         {
             SolveFem(parameters);
-            return null;
+            foreach (var item in output.Receivers)
+            {
+                item.V = GetSolutionAtpoint(Math.Sqrt(item.XM * item.XM + item.YM * item.YM), 0) - GetSolutionAtpoint(Math.Sqrt(item.XN * item.XN + item.YN * item.YN), 0);
+            }
+
         }
 
         protected override double CalcAverageSigma(IElement element, ProblemInputParametersLab1 parameters)
@@ -37,7 +41,7 @@ namespace Vagin.Problems
             return h1sigma + h2sigma + h3sigma + h4sigma;
         }
 
-        protected override double[] GetLocalRightPart(IElement element)
+        protected override double[] GetLocalRightPart(IElement element, ProblemInputParametersLab1 parameters)
         {
             if (!IsPointInsideElement(element, 0, 0))
             {
@@ -45,7 +49,7 @@ namespace Vagin.Problems
             }
             else
             {
-                return new double[] { 1.0 / (2 * Math.PI), 0, 0, 0 };
+                return new double[] { parameters.SourcePower / (2 * Math.PI), 0, 0, 0 };
             }
         }
     }

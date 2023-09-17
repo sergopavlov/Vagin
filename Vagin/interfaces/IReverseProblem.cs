@@ -7,9 +7,9 @@ using Vagin.Parameters;
 
 namespace Vagin.interfaces
 {
-    internal interface IReverseProblem
+    internal interface IReverseProblem<Tinput,Toutput> where Tinput : ProblemOutputParameters where Toutput :  ProblemInputParameters
     {
-        public ProblemOutputParameters Calculate(ProblemInputParameters parameters, ProblemOutputParameters startValues);
+        public Toutput Calculate(Tinput parameters, Toutput startValues);
 
     }
 }

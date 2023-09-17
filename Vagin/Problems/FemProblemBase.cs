@@ -28,7 +28,7 @@ namespace Vagin.Problems
             }
             Addboundary();
             slae.LU();
-            q = slae.MSGLUPreCond(1e-15, 10000);
+            q = slae.SolveLosLUPrecond(1e-10, 10000);
         }
 
         protected bool IsPointInsideElement(IElement element, double r, double z)
@@ -69,7 +69,7 @@ namespace Vagin.Problems
             return (minR, maxR, minZ, maxZ);
         }
         protected abstract double CalcAverageSigma(IElement element, Tinput parameters);
-        protected abstract double[] GetLocalRightPart(IElement element);
+        protected abstract double[] GetLocalRightPart(IElement element, Tinput parameters);
         protected void AddLocal(IElement element, Tinput parameters)
         {
             var dims = GetElemBoundaries(element);
@@ -82,7 +82,7 @@ namespace Vagin.Problems
                 mesh.R[element.LocalToGlobal[1]]
             };
             
-            double[] localvec = GetLocalRightPart(element);
+            double[] localvec = GetLocalRightPart(element,parameters);
 
             for (int i = 0; i < 4; i++)
             {
@@ -157,7 +157,6 @@ namespace Vagin.Problems
                 slae.al[k] = 0;
             }
         }
-        public abstract Toutput Calculate(Tinput parameters);
         protected double GetSolutionAtpoint(double r,double z)
         {
             var elem = mesh.Elements.Where(elem => IsPointInsideElement(elem, r, z)).FirstOrDefault();
@@ -176,6 +175,8 @@ namespace Vagin.Problems
             }
             return res;
         }
+
+        public abstract void Calculate(Tinput parametersm, Toutput output);
 
         private static class Matrices
         {

@@ -22,11 +22,20 @@ parameters.H1 = 10;
 parameters.H2 = 20;
 parameters.H3 = 30;
 parameters.SourcePower = 1;
-parameters.Sigma1 = 1;
-parameters.Sigma2 = 1;
-parameters.Sigma3 = 1;
-parameters.Sigma4 = 1;
+parameters.Sigma1 = 0.1;
+parameters.Sigma2 = 0.2;
+parameters.Sigma3 = 0.3;
+parameters.Sigma4 = 0.4;
 
-problem.Calculate(parameters);
+var output = new ProblemOutputParametersLab1()
+{
+    Receivers = new()
+};
+output.Receivers.Add(new Receiver(100, 0, 200, 0, 0));
+
+problem.Calculate(parameters, output);
+Lab1SourcepowerProblem problem1 = new(problem);
+parameters.SourcePower = 100;
+var res = problem1.Calculate(output, parameters);
 
 Console.WriteLine("Hello, World!");

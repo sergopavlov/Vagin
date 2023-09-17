@@ -25,7 +25,12 @@ namespace Vagin.Problems
    internal abstract class DummyDirectProblem<Tinput, Toutput> : IDirectProblem<Tinput, Toutput> where Tinput : ProblemInputParameters where Toutput : ProblemOutputParameters
    {
       public abstract Toutput Calculate(Tinput parameters);
-   }
+
+        public void Calculate(Tinput parametersm, Toutput output)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
    internal class DummyDirectProblem : DummyDirectProblem<DummyInput, DummyOutput>
    {
