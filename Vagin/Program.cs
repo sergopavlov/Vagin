@@ -2,18 +2,17 @@ using Vagin;
 using Vagin.Parameters;
 using Vagin.Problems;
 
-Console.WriteLine("Hello, World!");
 
 MeshParameters tmp = new MeshParameters();
 tmp.RMax = 10000;
 tmp.RMin = 0;
 tmp.RsplitCount = 200;
-tmp.RCoeff = 1.045;
+tmp.RCoeff = 1.04;
 
 tmp.ZMax = 0;
 tmp.ZMin = -10000;
 tmp.ZsplitCount = 200;
-tmp.ZCoeff = 1.045;
+tmp.ZCoeff = 1.04;
 var check = MeshBuilder.BuildMesh(tmp);
 
 FemProblemLab1 problem = new(check);
@@ -29,3 +28,4 @@ parameters.Sigma4 = 1;
 
 problem.Calculate(parameters);
 
+Console.WriteLine("Hello, World!");

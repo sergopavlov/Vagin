@@ -8,5 +8,7 @@ namespace Vagin.Parameters
 {
     internal class ProblemOutputParametersLab1:ProblemOutputParameters
     {
+        public List<Receiver> Receivers { get; set; }
+
     }
 }

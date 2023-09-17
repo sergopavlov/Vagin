@@ -27,7 +27,8 @@ namespace Vagin.Problems
                 AddLocal(elem, parameters);
             }
             Addboundary();
-            q = slae.MSG(1e-15, 10000);
+            slae.LU();
+            q = slae.MSGLUPreCond(1e-15, 10000);
         }
 
         protected bool IsPointInsideElement(IElement element, double r, double z)
@@ -75,16 +76,17 @@ namespace Vagin.Problems
             double hr = dims.rmax - dims.rmin;
             double hz = dims.zmax - dims.zmin;
             double cursigma = CalcAverageSigma(element, parameters);
-            double[] rs = new double[4];
-            for (int i = 0; i < 4; i++)
+            double[] rs = new double[2]
             {
-                rs[i] = mesh.R[element.LocalToGlobal[i]];
-            }
+                mesh.R[element.LocalToGlobal[0]],
+                mesh.R[element.LocalToGlobal[1]]
+            };
+            
             double[] localvec = GetLocalRightPart(element);
 
             for (int i = 0; i < 4; i++)
             {
-                slae.b[i] += localvec[i];
+                slae.b[element.LocalToGlobal[i]] += localvec[i];
                 for (int k = 0; k < 2; k++)
                     slae.di[element.LocalToGlobal[i]] += cursigma * rs[k] * (hz / hr * Matrices.GR[k][i % 2][i % 2] * Matrices.MZ[i / 2][i / 2] + hr / hz * Matrices.MR[k][i % 2][i % 2] * Matrices.GZ[i / 2][i / 2]);
                 for (int j = 0; j < i; j++)
@@ -158,30 +160,25 @@ namespace Vagin.Problems
         public abstract Toutput Calculate(Tinput parameters);
         protected double GetSolutionAtpoint(double r,double z)
         {
-            throw new NotImplementedException();
+            var elem = mesh.Elements.Where(elem => IsPointInsideElement(elem, r, z)).FirstOrDefault();
+            if (elem == null)
+                throw new ArgumentOutOfRangeException();
+            var coords = GetLocalCoords(elem, r, z);
+            var psi = new double[4];
+            psi[0] = (1 - coords.ksi) * (1 - coords.eta);
+            psi[1] = (coords.ksi) * (1 - coords.eta);
+            psi[2] = (1 - coords.ksi) * (coords.eta);
+            psi[3] = (coords.ksi) * (coords.eta);
+            double res = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                res += psi[i] * q[elem.LocalToGlobal[i]];
+            }
+            return res;
         }
 
         private static class Matrices
         {
-            public static double[][][] GMatr = new double[2][][]
-            {
-                new double[4][]
-                {
-                    new double[4]{5.0/12,-1.0/12,-1.0/6,-1.0/6},//x y  x
-                    new double[4]{-1.0/12,1.0/4,-1.0/6,0 },//1-x y x
-                    new double[4]{-1.0/6,-1.0/6,5.0/12,-1.0/12},//1-y x x
-                    new double[4]{ -1.0 / 6,0,-1.0/12,1.0/4 }//1-y 1-x x
-                },
-                new double[4][]
-                {
-                    new double[4]{1.0/4,-1.0/12,0,-1.0/6},//x y 1-x
-                    new double[4]{-1.0/12,5.0/12,-1.0/6,-1.0/6},//1-x y 1-x
-                    new double[4]{0,-1.0/6,1.0/4,-1.0/12},
-                    new double[4]{-1.0/6,-1.0/6,-1.0/12,5.0/12}
-                }
-            };
-
-
             public static double[][][] GR = new double[][][]
             {
                 new double[][]
