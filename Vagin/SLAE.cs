@@ -515,7 +515,7 @@ namespace Vagin
                 resid = Math.Sqrt(test1 / test2);
                 k++;
             }
-            Console.WriteLine($"{k} {rnorm / bnorm} {resid}");
+            //Console.WriteLine($"{k} {rnorm / bnorm} {resid}");
             return x;
         }
 
