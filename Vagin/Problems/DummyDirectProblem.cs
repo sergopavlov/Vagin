@@ -24,19 +24,26 @@ namespace Vagin.Problems
 {
    internal abstract class DummyDirectProblem<Tinput, Toutput> : IDirectProblem<Tinput, Toutput> where Tinput : ProblemInputParameters where Toutput : ProblemOutputParameters
    {
-      public abstract Toutput Calculate(Tinput parameters);
+      public abstract Toutput Calculate(Tinput parameters, DeltaType type);
 
         public void Calculate(Tinput parametersm, Toutput output)
         {
             throw new NotImplementedException();
         }
-    }
+
+      public abstract void Calculate(Tinput parametersm, Toutput output, DeltaType type);
+   }
 
    internal class DummyDirectProblem : DummyDirectProblem<DummyInput, DummyOutput>
    {
-      public override DummyOutput Calculate(DummyInput parameters)
+      public override DummyOutput Calculate(DummyInput parameters, DeltaType type)
       {
          return new DummyOutput(parameters.Point * parameters.Point + 4.0);
+      }
+
+      public override void Calculate(DummyInput parametersm, DummyOutput output, DeltaType type)
+      {
+         throw new NotImplementedException();
       }
    }
 }

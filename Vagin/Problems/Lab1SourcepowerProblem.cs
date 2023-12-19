@@ -33,13 +33,12 @@ namespace Vagin.Problems
             Console.WriteLine($"iter = {Iterations} power = {parameter.SourcePower} penalty = {penalty}");
          }
          return startValues;// засунуть H3 в ProblemOutputParameters и вернуть
-         throw new NotImplementedException();
       }
       private int Assembly(ProblemInputParametersLab1 parameters, ProblemOutputParametersLab1 parametersout)
       {
          int n = parametersout.Receivers.Count;
          var calcnodiff = (ProblemOutputParametersLab1)parametersout.Clone();
-         directProblem.Calculate(parameters, calcnodiff);
+         directProblem.Calculate(parameters, calcnodiff, DeltaType.delta);
          double[] V = new double[n];
          for (int i = 0; i < n; i++)
          {
@@ -49,7 +48,7 @@ namespace Vagin.Problems
                                                     //var r = CalcF(parameters, parametersout);
          parameters.SourcePower += dH;
          var calcdiff = (ProblemOutputParametersLab1)parametersout.Clone();
-         directProblem.Calculate(parameters, calcdiff);
+         directProblem.Calculate(parameters, calcdiff, DeltaType.delta);
          double[] dV = new double[parametersout.Receivers.Count];
          for (int i = 0; i < dV.Length; i++)
          {

@@ -8,8 +8,8 @@ using Vagin.Parameters;
 
 namespace Vagin.Problems
 {
-   internal abstract class InverseProblemBase<Tinput, Toutput> : IReverseProblem<Tinput, Toutput> where Tinput :  ProblemOutputParameters where Toutput : ProblemInputParameters
-    {
+   internal abstract class InverseProblemBase<Tinput, Toutput> : IReverseProblem<Tinput, Toutput> where Tinput : ProblemOutputParameters where Toutput : ProblemInputParameters
+   {
       private double Experimental = 13.0;
       private int Iterations = 0; // Счётчик итераций (для отчёта)
       private int Maxiter = 100;
@@ -34,21 +34,21 @@ namespace Vagin.Problems
          }
          return new DummyOutput(H3);// засунуть H3 в ProblemOutputParameters и вернуть
       }
-        public abstract Toutput Calculate(Tinput parameters, Toutput startValues);
+      public abstract Toutput Calculate(Tinput parameters, Toutput startValues);
 
-        private int Assembly()
+      protected virtual int Assembly()
       {
          double dH = 0.05 * H3; // 0.05 взято из методы с12 п3
-         double tmp = dummyDirectProblem.Calculate(new DummyInput(H3)).Value;
-         double dVdH = (dummyDirectProblem.Calculate(new DummyInput(H3 + dH)).Value - tmp) / dH;
-         A = dVdH * dVdH;
-         F = dVdH * (Experimental - tmp);
+         //double tmp = dummyDirectProblem.Calculate(new DummyInput(H3)).Value;
+         //double dVdH = (dummyDirectProblem.Calculate(new DummyInput(H3 + dH)).Value - tmp) / dH;
+         //A = dVdH * dVdH;
+         //F = dVdH * (Experimental - tmp);
          if (Math.Abs(A) < 1e-14)
             return -1;
          return 0;
       }
 
-      private void Gauss()
+      protected virtual void Gauss()
       {
          Result = F / A;
       }

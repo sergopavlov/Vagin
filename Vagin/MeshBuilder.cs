@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Vagin.interfaces;
 using Vagin.Parameters;
+using Vagin.Problems;
 
 namespace Vagin
 {
    internal static class MeshBuilder
    {
-      public static IMesh BuildMesh(MeshParameters parameters)
+      public static IMesh BuildMesh(MeshParameters parameters, DeltaType type)
       {
          Mesh mesh = new Mesh();
          parameters.ZsplitCount--;
@@ -21,10 +22,10 @@ namespace Vagin
          R.Add(parameters.RMin + firstR);
          for (int i = 2; i < parameters.RsplitCount; i++)
          {
-            R.Add(R[i - 1] + (R[i - 1]-R[i-2]) * parameters.RCoeff);
+            R.Add(R[i - 1] + (R[i - 1] - R[i - 2]) * parameters.RCoeff);
          }
          R.Add(parameters.RMax);
-         
+
 
          var Z = new List<double>();
          var firstZ = Math.Abs(parameters.ZCoeff - 1) < 1e-12 ? (parameters.ZMax - parameters.ZMin) / parameters.ZsplitCount : (parameters.ZMax - parameters.ZMin) * (1 - parameters.ZCoeff) / (1 - Math.Pow(parameters.ZCoeff, (double)parameters.ZsplitCount));
@@ -35,26 +36,68 @@ namespace Vagin
             Z.Add(Z[i - 1] + (Z[i - 1] - Z[i - 2]) * parameters.ZCoeff);
          }
          Z.Add(parameters.ZMin);
-         mesh.SetR(R, Z.Count);
-         mesh.SetZ(Z, R.Count);
 
-         var Elements = new List<Element>();
-         var DirichleVertices = new HashSet<int>();
-         for (int i = 0; i < Z.Count-1; i++)
+         var tmp = new List<double>();
+         for (int i = 0; i <= parameters.ZsplitCount; i++)
          {
-            for (int j = 0; j<R.Count-1; j++)
+            tmp.AddRange(R);
+         }
+         R = tmp;
+         tmp = new List<double>();
+         for (int i = 0; i <= parameters.ZsplitCount; i++)
+            for (int j = 0; j <= parameters.RsplitCount; j++)
             {
-               Elements.Add(new Element(new int[] { i * R.Count + j, i * R.Count + j + 1, (i + 1) * R.Count + j, (i + 1) * R.Count + j + 1 }));
-               if (i == Z.Count - 2)
-                  DirichleVertices.Add((i + 1) * R.Count + j);
-               if (j == R.Count - 2)
-                  DirichleVertices.Add(i * R.Count + j + 1);
-               if (i == Z.Count - 2 && j == R.Count - 2)
-                  DirichleVertices.Add((i + 1) * R.Count + j + 1);
+               tmp.Add(Z[i]);
+            }
+         Z = tmp;
+         var Elements = new List<Element>();
+         if (type == DeltaType.noToK)
+         {
+            Z.RemoveAt(0);
+            R.RemoveAt(0);
+         }
+         mesh.SetR(R);
+         mesh.SetZ(Z);
+         var DirichleVertices = new List<int>();
+         for (int i = 0; i < parameters.ZsplitCount; i++)
+         {
+            for (int j = 0; j < parameters.RsplitCount; j++)
+            {
+               Elements.Add(new Element(new int[] { i * (parameters.RsplitCount + 1) + j, i * (parameters.RsplitCount + 1) + j + 1, (i + 1) * (parameters.RsplitCount + 1) + j, (i + 1) * (parameters.RsplitCount + 1) + j + 1 }));
+               if (i == parameters.ZsplitCount - 1)
+                  DirichleVertices.Add((i + 1) * (parameters.RsplitCount + 1) + j);
+               if (j == parameters.RsplitCount - 1)
+                  DirichleVertices.Add(i * (parameters.RsplitCount + 1) + j + 1);
+               if (i == parameters.ZsplitCount - 1 && j == parameters.RsplitCount - 1)
+                  DirichleVertices.Add((i + 1) * (parameters.RsplitCount + 1) + j + 1);
             }
          }
+         if (type == DeltaType.noToK)
+         {
+            Elements.RemoveAt(0);
+            foreach (var item in Elements)
+            {
+               for (int i = 0; i < 4; i++)
+               {
+                  item.LocalToGlobal[i]--;
+               }
+            }
+            for (int i = 0; i < DirichleVertices.Count; i++)
+            {
+               DirichleVertices[i]--;
+            }
+         }
+
          mesh.SetElements(Elements);
-         mesh.SetDirichleCondition(DirichleVertices);
+         mesh.SetDirichleCondition(DirichleVertices.Distinct().ToList());
+         if (type == DeltaType.noToK)
+         {
+            mesh.SetNeumanCondition(new List<(int, int, double)>
+            {
+               (0, 100, 1 / (-2 * Math.PI * Z[100] * R[0] + Math.PI * R[0] * R[0])),
+               (99, 100, 1 / (-2 * Math.PI * Z[100] * R[0] + Math.PI * R[0] * R[0]))
+            });
+         }
 
          return mesh;
       }
