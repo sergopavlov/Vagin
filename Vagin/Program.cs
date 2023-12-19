@@ -82,16 +82,24 @@ void CalcV()
 
 List<Source> sources = new()
 {
-   new Source(0,-500,100,-500,1),
-   new Source(0,0,100,0,1),
-   new Source(0,500,100,500,1)
+   new Source(10,100,10,110,1),
+   new Source(30,100,30,110,1),
+   new Source(50,100,50,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
+   new Source(70,100,70,110,1),
 };
 
 List<Receiver> receivers = new()
 {
-   new(200,0,300,0,0),
-   new(500,0,600,0,0),
-   new(1000,0,1100,0,0)
+   new(10,40,40,40,0),
+   new(30,30,60,30,0),
+   new(50,20,80,20,0)
 };
 
 
@@ -99,59 +107,61 @@ FemProblemLab2 problem = new(mesh);
 
 void GenerateV()
 {
-   //foreach (var source in sources)
-   var source = sources[0];
-   {
-      foreach (var recv in receivers)
-      {
-         recv.V = 0;
-         double Vm = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XM) * (source.XA - recv.XM) + (source.YA - recv.YM) * (source.YA - recv.YM)), 0);
-         Vm -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XM) * (source.XB - recv.XM) + (source.YB - recv.YM) * (source.YB - recv.YM)), 0);
-         double Vn = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XN) * (source.XA - recv.XN) + (source.YA - recv.YN) * (source.YA - recv.YN)), 0);
-         Vn -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XN) * (source.XB - recv.XN) + (source.YB - recv.YN) * (source.YB - recv.YN)), 0);
-         recv.V += (Vm - Vn) * source.I;
-      }
-   }
+    //foreach (var source in sources)
+    var source = sources[1];
+    {
+        for (int i = 0; i < receivers.Count; i++)
+        {
+            Receiver? recv = receivers[i];
+            recv.V = 0;
+            double Vm = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XM) * (source.XA - recv.XM) + (source.YA - recv.YM) * (source.YA - recv.YM)), 0);
+            Vm -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XM) * (source.XB - recv.XM) + (source.YB - recv.YM) * (source.YB - recv.YM)), 0);
+            double Vn = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XN) * (source.XA - recv.XN) + (source.YA - recv.YN) * (source.YA - recv.YN)), 0);
+            Vn -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XN) * (source.XB - recv.XN) + (source.YB - recv.YN) * (source.YB - recv.YN)), 0);
+            recv.V += (Vm - Vn) * source.I;
+        }
+        receivers[1].V *= 1.06;
+    }
 }
 
 (int index, double residual) CalcV(List<Receiver> Synthetic)
 {
-   var min = 99999999.9;
-   var index = -1; 
-   var residual = 0.0;
-   var receiversForISource = new List<List<Receiver>>();
-   for (int i = 0; i < sources.Count; i++)
-   {
-      receiversForISource.Add(new List<Receiver>());
-      for (int j = 0; j < receivers.Count(); j++)
-      {
-         receiversForISource[i].Add((Receiver)receivers[j].Clone());
-         receiversForISource[i][j].V = 0;
-      }
-      var source = sources[i];
-      foreach (var recv in receiversForISource[i])
-      {
-         double Vm = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XM) * (source.XA - recv.XM) + (source.YA - recv.YM) * (source.YA - recv.YM)), 0);
-         Vm -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XM) * (source.XB - recv.XM) + (source.YB - recv.YM) * (source.YB - recv.YM)), 0);
-         double Vn = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XN) * (source.XA - recv.XN) + (source.YA - recv.YN) * (source.YA - recv.YN)), 0);
-         Vn -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XN) * (source.XB - recv.XN) + (source.YB - recv.YN) * (source.YB - recv.YN)), 0);
-         recv.V += (Vm - Vn) * source.I;
-      }
-   }
-   for (int i = 0; i < sources.Count; i++)
-   {
-      residual = 0.0;
-      for (int j = 0; j < receivers.Count; j++)
-      {
-         residual += Math.Abs(receiversForISource[i][j].V - Synthetic[j].V);
-      }
-      if (residual < min)
-      {
-         min = residual;
-         index = i;
-      }
-   }
-   return (index, min);
+    var min = 99999999.9;
+    var index = -1;
+    var residual = 0.0;
+    var receiversForISource = new List<List<Receiver>>();
+    for (int i = 0; i < sources.Count; i++)
+    {
+        receiversForISource.Add(new List<Receiver>());
+        for (int j = 0; j < receivers.Count(); j++)
+        {
+            receiversForISource[i].Add((Receiver)receivers[j].Clone());
+            receiversForISource[i][j].V = 0;
+        }
+        var source = sources[i];
+        foreach (var recv in receiversForISource[i])
+        {
+            double Vm = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XM) * (source.XA - recv.XM) + (source.YA - recv.YM) * (source.YA - recv.YM)), 0);
+            Vm -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XM) * (source.XB - recv.XM) + (source.YB - recv.YM) * (source.YB - recv.YM)), 0);
+            double Vn = problem.GetSolutionAtpoint(Math.Sqrt((source.XA - recv.XN) * (source.XA - recv.XN) + (source.YA - recv.YN) * (source.YA - recv.YN)), 0);
+            Vn -= problem.GetSolutionAtpoint(Math.Sqrt((source.XB - recv.XN) * (source.XB - recv.XN) + (source.YB - recv.YN) * (source.YB - recv.YN)), 0);
+            recv.V += (Vm - Vn) * source.I;
+        }
+    }
+    for (int i = 0; i < sources.Count; i++)
+    {
+        residual = 0.0;
+        for (int j = 0; j < receivers.Count; j++)
+        {
+            residual += Math.Abs(receiversForISource[i][j].V - Synthetic[j].V);
+        }
+        if (residual < min)
+        {
+            min = residual;
+            index = i;
+        }
+    }
+    return (index, min);
 }
 
 ProblemInputParametersLab2 input = new();
